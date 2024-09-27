@@ -1,4 +1,3 @@
-
 import telebot
 from telebot import types
 
@@ -9,18 +8,22 @@ bot = telebot.TeleBot('5488026909:AAGWNuDbNhu6SPJaCEjMOG3RLzO9v1FxXNs')
 @bot.message_handler(commands=['start'])
 def start_handler(message):
     # Создаем кнопки
-    keyboard = types.ReplyKeyboardMarkup(row_width=2)
-    button1 = types.KeyboardButton('Привет')
-    button2 = types.KeyboardButton('Пока')
+    keyboard = types.InlineKeyboardMarkup()
+    button1 = types.InlineKeyboardButton(text='Привет', callback_data='hello')
+    button2 = types.InlineKeyboardButton(text='Пока', callback_data='goodbye')
     # Добавляем кнопки на клавиатуру
     keyboard.add(button1, button2)
     # Отправляем сообщение с клавиатурой
     bot.send_message(message.chat.id, 'Выберите действие:', reply_markup=keyboard)
 
 # Обработчик текстовых сообщений
-@bot.message_handler(func=lambda message: True)
-def echo_handler(message):
-    bot.reply_to(message, message.text)
+@bot.callback_query_handler(func=lambda call: True)
+def callback_handler(call):
+    if call.data == 'hello':
+        bot.send_message(call.message.chat.id, 'Привет!')
+    elif call.data == 'goodbye':
+        bot.send_message(call.message.chat.id, 'Пока!')
+
 
 # Запуск бота
 bot.polling()
